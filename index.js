@@ -139,6 +139,47 @@ app.get("/joke", (req, res) => {
     })
 })
 
+app.post('/smartRead', async (req, res) => {
+    console.log(req.body);
+    const url = req.body.url
+    let result = await Mercury.parse(url).catch(err => { console.log("mercuryError", err) });
+    result.content = result.content.replace(/<[^>]*>?/gm, '');
+    result.content = result.content.replace(/&apos;/g, '\'')
+    result.content = result.content.replace(/&quot;/g, '"');
+    result.content = result.content.replace(/&#xA0;/g, ' ')
+    result.content = result.content.replace(/&amp;/g, '&')
+    result.content = result.content.replace(/&#x201C;/g, '"')
+    result.content = result.content.replace(/&#x201D;/g, '"')
+    result.content = result.content.replace(/&#x2019;/g, "'")
+    result.content = result.content.replace(/&#x2013;/g, "-")
+    result.content = result.content.replace(/&#x2026;/g, "...")
+    result.content = result.content.replace(/&#x2C6;/g, "^");
+    result.content = result.content.replace(/&#x2DC;/g, "~");
+    result.content = result.content.replace(/&#x2002;/g, " ");
+    result.content = result.content.replace(/&#x2003;/g, " ");
+    result.content = result.content.replace(/&#x2009;/g, " ");
+    result.content = result.content.replace(/&#x200C;/g, " ");
+    result.content = result.content.replace(/&#x200D;/g, " ");
+    result.content = result.content.replace(/&#x200E;/g, " ");
+    result.content = result.content.replace(/&#x200F;/g, " ");
+    result.content = result.content.replace(/&#x2014;/g, "--");
+    result.content = result.content.replace(/&#x2018;/g, "'");
+    result.content = result.content.replace(/&#x201A;/g, "‚");
+    result.content = result.content.replace(/&#x201E;/g, ",,");
+    result.content = result.content.replace(/&#x2039;/g, "<");
+    result.content = result.content.replace(/&#x203A;/g, ">");
+    result.content = result.content.replace(/&#x20B9;/g, "₹");
+    const params = new URLSearchParams()
+    params.append('payload', result.content);
+    const config = {
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    }
+    let resp = await axios.post('http://34.171.54.43:3050/smartRead', params, config);
+    res.send(resp.data);
+});
+
 app.listen(port, () => {
     console.log(`Example app is listening on port http://localhost:${port}`)
 });
