@@ -7,7 +7,10 @@ let redis_password = "AFahzbIs3wTxs0VMPnvTqkuqyoZOWXwV"
 const Mercury = require('@postlight/mercury-parser');
 var client = redis.createClient({ host: redis_host, port: redis_port, password: redis_password })
 const express = require("express");
+var bodyParser = require('body-parser')
+var jsonParser = bodyParser.json()
 const app = express();
+app.use(jsonParser)
 app.use(Cors())
 let port = process.env.PORT || 3000;
 // setInterval(() => {
