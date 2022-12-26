@@ -183,7 +183,7 @@ app.post('/smartRead', async (req, res) => {
 });
 
 app.post("/prepareQuestions", async (req, res) => {
-    let postBody = { 'paragraph': req.body.para }
+    let postBody = { 'para': req.body.para }
     let resp = await axios.post('http://34.171.54.43:3056/prepare',postBody);
     res.send(resp.data);
 
