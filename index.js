@@ -131,19 +131,18 @@ app.get("/joke", (req, res) => {
         headers: { 'Accept': 'application/json' }
     }
     axios.get('https://v2.jokeapi.dev/joke/Any?blacklistFlags=nsfw,religious,racist,sexist,explicit', options).then(response => {
-        if(response.data.type == "twopart"){
-            let obj = {"joke": `${response.data.setup} -> ${response.data.delivery}`}
+        if (response.data.type == "twopart") {
+            let obj = { "joke": `${response.data.setup} -> ${response.data.delivery}` }
             res.send(obj);
         }
-        else{
-            res.send({"joke":response.data.joke});
+        else {
+            res.send({ "joke": response.data.joke });
         }
-        
+
     })
 })
 
 app.post('/smartRead', async (req, res) => {
-    console.log(req.body);
     const url = req.body.url
     let result = await Mercury.parse(url).catch(err => { console.log("mercuryError", err) });
     result.content = result.content.replace(/<[^>]*>?/gm, '');
@@ -182,6 +181,13 @@ app.post('/smartRead', async (req, res) => {
     let resp = await axios.post('http://34.171.54.43:3050/smartRead', params, config);
     res.send(resp.data);
 });
+
+app.post("/prepareQuestions", async (req, res) => {
+    let postBody = { 'paragraph': req.body.para }
+    let resp = await axios.post('http://34.171.54.43:3056/prepare',postBody);
+    res.send(resp.data);
+
+})
 
 app.listen(port, () => {
     console.log(`Example app is listening on port http://localhost:${port}`)
