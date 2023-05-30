@@ -175,7 +175,7 @@ app.post('/smartRead', async (req, res) => {
     params.append('payload', result.content);
     const config = {
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
+            'Content-Type': 'application/json'
         }
     }
     let postBody = {'payload': result.content};
