@@ -178,6 +178,7 @@ app.post('/smartRead', async (req, res) => {
             'Content-Type': 'application/x-www-form-urlencoded'
         }
     }
+    console.log(params);
     let resp = await axios.post('http://35.188.135.67:3050/smartRead', params, config);
     res.send(resp.data);
 });
