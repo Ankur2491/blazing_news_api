@@ -189,7 +189,17 @@ app.post("/prepareQuestions", async (req, res) => {
     res.send(resp.data);
 
 })
-
+app.get("/places",async (req, res) => {
+    let x = await fetch('https://radio.garden/api/ara/content/places')
+	let json = await x.json()
+	res.send(json)
+})
+app.get("/channels/:channelId", async (req, res) => {
+    let channelId = req.params.channelId;
+    let x = await fetch(`https://radio.garden/api/ara/content/page/${channelId}/channels`)
+	let json = await x.json()
+	res.send(json)
+});
 app.listen(port, () => {
     console.log(`Example app is listening on port http://localhost:${port}`)
 });
