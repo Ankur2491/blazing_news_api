@@ -126,14 +126,14 @@ app.get("/backImg", (req, res) => {
     })
 })
 
-app.get("/positiveNews", (res, res)=> {
+app.get("/positiveNews", (req, res)=> {
     client.get('sentimentNews', (err, resp) => {
         let data = JSON.parse(resp);
         res.send(data.positive);
     })
 })
 
-app.get("/negativeNews", (res, res)=> {
+app.get("/negativeNews", (req, res)=> {
     client.get('sentimentNews', (err, resp) => {
         let data = JSON.parse(resp);
         res.send(data.negative);
