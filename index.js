@@ -126,6 +126,20 @@ app.get("/backImg", (req, res) => {
     })
 })
 
+app.get("/positiveNews", (res, res)=> {
+    client.get('sentimentNews', (err, resp) => {
+        let data = JSON.parse(resp);
+        res.send(data.positive);
+    })
+})
+
+app.get("/negativeNews", (res, res)=> {
+    client.get('sentimentNews', (err, resp) => {
+        let data = JSON.parse(resp);
+        res.send(data.negative);
+    })
+})
+
 app.get("/joke", (req, res) => {
     const options = {
         headers: { 'Accept': 'application/json' }
