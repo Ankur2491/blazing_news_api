@@ -9,6 +9,7 @@
   "author": "Ankur Sharma",
   "license": "ISC",
   "dependencies": {
+    "@google/generative-ai": "^0.2.1",
     "@postlight/mercury-parser": "^2.2.0",
     "axios": "^0.21.1",
     "cors": "^2.8.5",
