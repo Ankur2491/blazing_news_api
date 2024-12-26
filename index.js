@@ -3,12 +3,14 @@ var redis = require('redis');
 let redis_host = "redis-11422.c62.us-east-1-4.ec2.cloud.redislabs.com"
 let redis_port = 11422
 const axios = require('axios');
+const natural = require('natural');
+const stopWords = ["call", "upon", "still", "nevertheless", "down", "every", "forty", "'re", "always", "whole", "side", "n't", "now", "however", "an", "show", "least", "give", "below", "did", "sometimes", "which", "'s", "nowhere", "per", "hereupon", "yours", "she", "moreover", "eight", "somewhere", "within", "whereby", "few", "has", "so", "have", "for", "noone", "top", "were", "those", "thence", "eleven", "after", "no", "'ll", "others", "ourselves", "themselves", "though", "that", "nor", "just", "'s", "before", "had", "toward", "another", "should", "herself", "and", "these", "such", "elsewhere", "further", "next", "indeed", "bottom", "anyone", "his", "each", "then", "both", "became", "third", "whom", "'ve", "mine", "take", "many", "anywhere", "to", "well", "thereafter", "besides", "almost", "front", "fifteen", "towards", "none", "be", "herein", "two", "using", "whatever", "please", "perhaps", "full", "ca", "we", "latterly", "here", "therefore", "us", "how", "was", "made", "the", "or", "may", "'re", "namely", "'ve", "anyway", "amongst", "used", "ever", "of", "there", "than", "why", "really", "whither", "in", "only", "wherein", "last", "under", "own", "therein", "go", "seems", "'m", "wherever", "either", "someone", "up", "doing", "on", "rather", "ours", "again", "same", "over", "'s", "latter", "during", "done", "'re", "put", "'m", "much", "neither", "among", "seemed", "into", "once", "my", "otherwise", "part", "everywhere", "never", "myself", "must", "will", "am", "can", "else", "although", "as", "beyond", "are", "too", "becomes", "does", "a", "everyone", "but", "some", "regarding", "'ll", "against", "throughout", "yourselves", "him", "'d", "it", "himself", "whether", "move", "'m", "hereafter", "re", "while", "whoever", "your", "first", "amount", "twelve", "serious", "other", "any", "off", "seeming", "four", "itself", "nothing", "beforehand", "make", "out", "very", "already", "various", "until", "hers", "they", "not", "them", "where", "would", "since", "everything", "at", "together", "yet", "more", "six", "back", "with", "thereupon", "becoming", "around", "due", "keep", "somehow", "n't", "across", "all", "when", "i", "empty", "nine", "five", "get", "see", "been", "name", "between", "hence", "ten", "several", "from", "whereupon", "through", "hereby", "'ll", "alone", "something", "formerly", "without", "above", "onto", "except", "enough", "become", "behind", "'d", "its", "most", "n't", "might", "whereas", "anything", "if", "her", "via", "fifty", "is", "thereby", "twenty", "often", "whereafter", "their", "also", "anyhow", "cannot", "our", "could", "because", "who", "beside", "by", "whence", "being", "meanwhile", "this", "afterwards", "whenever", "mostly", "what", "one", "nobody", "seem", "less", "do", "'d", "say", "thus", "unless", "along", "yourself", "former", "thru", "he", "hundred", "three", "sixty", "me", "sometime", "whose", "you", "quite", "'ve", "about", "even", "said"]
 let redis_password = "AFahzbIs3wTxs0VMPnvTqkuqyoZOWXwV"
 const Mercury = require('@postlight/mercury-parser');
 var client = redis.createClient({ host: redis_host, port: redis_port, password: redis_password })
 const express = require("express");
 var bodyParser = require('body-parser')
-var jsonParser = bodyParser.json()
+var jsonParser = bodyParser.json({limit:'50mb'})
 const app = express();
 app.use(jsonParser)
 app.use(Cors())
@@ -269,6 +271,39 @@ const {
     let json = {facts: data};
 	res.send(json)
 });
+
+app.post("/prepareKeyNews", async(req, res) => {
+    let newsArr = req.body.newsArr;
+    let keyNews = prepareKeyNews(newsArr);
+    res.send({"keyNews": keyNews});
+    });
+
+function prepareKeyNews(newsArr) {
+    let tokenizer = new natural.WordTokenizer();
+    let wordScore = {};
+    for (let news of newsArr) {
+        let wordArr = tokenizer.tokenize(news['title']);
+        let filteredWordArr = wordArr.filter(word => !stopWords.includes(word.toLowerCase()));
+        for (let w of filteredWordArr) {
+            if(w.length>3) {
+            if (wordScore && wordScore.hasOwnProperty(w)) {
+                wordScore[w] = wordScore[w] + 1;
+            }
+            else {
+                wordScore[w] = 1;
+            }
+        }
+        }
+    }
+    let entries = Object.entries(wordScore);
+    let sortedEntries = entries.sort((a,b)=>b[1]-a[1]);
+    let finalValues = [];
+    for(let i=0;i<20;i++) {
+        finalValues.push(sortedEntries[i][0]);
+    }
+    return finalValues;
+}
+
 
 app.listen(port, () => {
     console.log(`Example app is listening on port http://localhost:${port}`)
